@@ -46,3 +46,19 @@ func (m *multiStreamServerInterceptor) chain(i int, srv interface{}, stream grpc
 		return m.chain(i+1, srv2, stream2, info, handler)
 	})
 }
+
+type serverStreamWithContext struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (ss serverStreamWithContext) Context() context.Context {
+	return ss.ctx
+}
+
+func NewServerStreamWithContext(stream grpc.ServerStream, ctx context.Context) grpc.ServerStream {
+	return serverStreamWithContext{
+		ServerStream: stream,
+		ctx:          ctx,
+	}
+}
